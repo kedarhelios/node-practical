@@ -7,9 +7,14 @@ import {
     updateProduct,
 } from "../controllers/product.controller";
 import validate from "../utils/validate";
-import { createProductSchema } from "../validators/product.validator";
+import {
+    createProductSchema,
+    updateProductSchema,
+} from "../validators/product.validator";
+import { authenticate } from "../utils/authenticate";
 
 const router = express.Router();
+router.use(authenticate);
 
 router
     .route("/")
@@ -19,7 +24,7 @@ router
 router
     .route("/:productId")
     .get(getProduct)
-    .patch(updateProduct)
+    .patch(validate(updateProductSchema), updateProduct)
     .delete(deleteProduct);
 
 export default router;

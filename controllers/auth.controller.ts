@@ -1,0 +1,35 @@
+import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import ApiError from "../utils/ApiError";
+import { User } from "../models";
+import catchAsync from "../utils/catchAsync";
+
+const login = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { username, password } = req.body;
+
+        const user = await User.findOne({
+            where: { username },
+            attributes: ["id", "password"],
+        });
+        if (!user) {
+            return next(new ApiError(401, "Invalid credentials"));
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return next(new ApiError(401, "Invalid credentials"));
+        }
+
+        const token = jwt.sign(
+            { userId: user.id },
+            process.env.JWT_SECRET_KEY as string,
+            { expiresIn: "7d" }
+        );
+
+        res.status(200).json({ message: "Login successful", token });
+    }
+);
+
+export { login };

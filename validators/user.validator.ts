@@ -16,7 +16,7 @@ const createUserSchema = z.object(
                     invalid_type_error: "Password must be a string",
                     required_error: "Password is required",
                 })
-                .min(6, { message: "Password must be atleast 6 characters" })
+                .min(6, { message: "Password must be at least 6 characters" })
                 .max(20, {
                     message: "Password must be less than 20 characters",
                 }),
@@ -25,4 +25,33 @@ const createUserSchema = z.object(
     { message: "Payload must not be empty" }
 );
 
-export { createUserSchema };
+const updateUserSchema = z.object(
+    {
+        body: z.object({
+            name: z
+                .string({
+                    invalid_type_error: "Name must be a string",
+                    required_error: "Name is required",
+                })
+                .min(1, { message: "Name cannot be empty" }),
+            username: z
+                .string({
+                    invalid_type_error: "Username must be a string",
+                    required_error: "Username is required",
+                })
+                .min(1, { message: "Username cannot be empty" }),
+            password: z
+                .string({
+                    invalid_type_error: "Password must be a string",
+                })
+                .min(6, { message: "Password must be at least 6 characters" })
+                .max(20, {
+                    message: "Password must be less than 20 characters",
+                })
+                .optional(),
+        }),
+    },
+    { message: "Payload must not be empty" }
+);
+
+export { createUserSchema, updateUserSchema };

@@ -14,7 +14,7 @@ interface ProductModel
     > {
     id: CreationOptional<number>;
     name: string;
-    product_number: string;
+    product_number: number;
     price?: number;
     created_at: CreationOptional<Date>;
     updated_at: CreationOptional<Date>;
@@ -34,15 +34,14 @@ export default (sequelize: Sequelize) => {
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                validate: { notEmpty: true, len: [6, 255] },
+                validate: { notEmpty: true },
             },
             product_number: {
-                type: DataTypes.STRING,
+                type: DataTypes.INTEGER,
                 allowNull: false,
                 unique: true,
                 validate: {
                     notEmpty: true,
-                    len: [6, 255],
                     isNumeric: true,
                 },
             },

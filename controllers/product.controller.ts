@@ -4,19 +4,15 @@ import { Product } from "../models";
 
 const createProduct = catchAsync(async (req, res) => {
     const productBody = req.body;
+    const product_number = (await Product.max("product_number")) as number;
 
-    const productExists = await Product.findOne({
-        where: { product_number: productBody.product_number },
+    const product = await Product.create({
+        name: productBody.name,
+        price: productBody.price,
+        product_number: product_number + 1,
+        created_by: req.user.userId,
+        updated_by: req.user.userId,
     });
-
-    if (productExists) {
-        throw new ApiError(
-            400,
-            "Product already exists with the same product number"
-        );
-    }
-
-    const product = await Product.create(productBody);
     return res.status(201).json(product);
 });
 
@@ -38,10 +34,17 @@ const getProduct = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
-    const [affectedRows, updatedProduct] = await Product.update(req.body, {
-        where: { id: req.params.productId },
-        returning: true,
-    });
+    const [affectedRows, updatedProduct] = await Product.update(
+        {
+            name: req.body.name,
+            price: req.body.price,
+            updated_by: req.user.userId,
+        },
+        {
+            where: { id: req.params.productId },
+            returning: true,
+        }
+    );
 
     if (affectedRows === 0) {
         throw new ApiError(404, "Product not found");
