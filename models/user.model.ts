@@ -35,18 +35,18 @@ export default (sequelize: Sequelize) => {
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                validate: { notEmpty: true, len: [6, 255] },
+                validate: { notEmpty: true },
             },
             username: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
-                validate: { notEmpty: true, len: [6, 255] },
+                validate: { notEmpty: true },
             },
             password: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                validate: { notEmpty: true, len: [6, 255] },
+                validate: { notEmpty: true },
             },
             created_at: {
                 type: DataTypes.DATE,

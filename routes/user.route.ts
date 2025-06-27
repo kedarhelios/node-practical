@@ -6,10 +6,12 @@ import {
     getUsers,
     updateUser,
 } from "../controllers/user.controller";
+import { createUserSchema } from "../validators/user.validator";
+import validate from "../utils/validate";
 
 const router = express.Router();
 
-router.route("/").get(getUsers).post(createUser);
+router.route("/").get(getUsers).post(validate(createUserSchema), createUser);
 
 router.route("/:userId").get(getUser).patch(updateUser).delete(deleteUser);
 

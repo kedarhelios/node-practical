@@ -6,10 +6,15 @@ import {
     getProducts,
     updateProduct,
 } from "../controllers/product.controller";
+import validate from "../utils/validate";
+import { createProductSchema } from "../validators/product.validator";
 
 const router = express.Router();
 
-router.route("/").get(getProducts).post(createProduct);
+router
+    .route("/")
+    .get(getProducts)
+    .post(validate(createProductSchema), createProduct);
 
 router
     .route("/:productId")

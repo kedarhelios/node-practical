@@ -1,5 +1,5 @@
-import defineUser from "./user";
-import defineProduct from "./product";
+import defineUser from "./user.model";
+import defineProduct from "./product.model";
 import sequelizeConnection from "../database/database";
 
 const User = defineUser(sequelizeConnection);
