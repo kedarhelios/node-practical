@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login</title>
+        <link
+            href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/flatly/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    </head>
+    <body class="bg-light">
+        <div
+            class="container d-flex justify-content-center align-items-center vh-100"
+        >
+            <div class="card shadow-lg p-4" style="width: 400px">
+                <h1 class="text-center mb-4">Login</h1>
+                <div
+                    id="message"
+                    class="mb-3 text-center"
+                    style="font-size: 1.1rem"
+                ></div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        class="form-control"
+                        placeholder="Enter username"
+                        required
+                    />
+                    <div
+                        id="username-error"
+                        class="text-danger mt-2"
+                        style="font-size: 0.875rem"
+                    ></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-control"
+                        placeholder="Enter password"
+                        required
+                    />
+                    <div
+                        id="password-error"
+                        class="text-danger mt-2"
+                        style="font-size: 0.875rem"
+                    ></div>
+                </div>
+
+                <button id="loginBtn" class="btn btn-primary btn-block mt-3">
+                    Login
+                </button>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                let usernameTouched = false;
+                let passwordTouched = false;
+
+                const validateField = (field, errorId, minLength) => {
+                    const value = $(field).val().trim();
+                    const errorMessageElement = $(errorId);
+
+                    errorMessageElement.text("");
+
+                    if (usernameTouched || passwordTouched) {
+                        if (!value) {
+                            errorMessageElement.text("This field is required.");
+                            return false;
+                        }
+                        if (value.length < minLength) {
+                            errorMessageElement.text(
+                                `This field must be at least ${minLength} characters.`
+                            );
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                const triggerBlurOnInputs = () => {
+                    $("#username").blur();
+                    $("#password").blur();
+                };
+
+                $("#username")
+                    .on("blur", function () {
+                        usernameTouched = true;
+                        validateField("#username", "#username-error", 6);
+                    })
+                    .on("input", function () {
+                        if (usernameTouched) {
+                            validateField("#username", "#username-error", 6);
+                        }
+                    });
+
+                $("#password")
+                    .on("blur", function () {
+                        passwordTouched = true;
+                        validateField("#password", "#password-error", 6);
+                    })
+                    .on("input", function () {
+                        if (passwordTouched) {
+                            validateField("#password", "#password-error", 6);
+                        }
+                    });
+
+                const triggerLogin = () => {
+                    $("#message").text("");
+
+                    const username = $("#username").val();
+                    const password = $("#password").val();
+                    const $message = $("#message");
+
+                    let valid = true;
+
+                    if (!validateField("#username", "#username-error", 6)) {
+                        valid = false;
+                    }
+
+                    if (!validateField("#password", "#password-error", 6)) {
+                        valid = false;
+                    }
+
+                    if (valid) {
+                        $.ajax({
+                            url: "/auth/login",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({ username, password }),
+                            success: function (response) {
+                                $message
+                                    .css("color", "green")
+                                    .text("Login successful!");
+                            },
+                            error: function (xhr) {
+                                const msg =
+                                    xhr.responseJSON?.message ||
+                                    "Login failed!";
+                                $message.css("color", "red").text(msg);
+                            },
+                        });
+                    }
+                };
+
+                $("#loginBtn").click(function (e) {
+                    e.preventDefault();
+                    triggerBlurOnInputs();
+                    triggerLogin();
+                });
+
+                $("#username, #password").keydown(function (e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        triggerBlurOnInputs();
+                        triggerLogin();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
