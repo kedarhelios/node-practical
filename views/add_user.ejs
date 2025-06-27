@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Login</title>
+        <title>Add User</title>
         <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/flatly/bootstrap.min.css"
@@ -17,53 +17,70 @@
             class="container d-flex justify-content-center align-items-center vh-100"
         >
             <div class="card shadow-lg p-4" style="width: 400px">
-                <h1 class="text-center mb-4">Login</h1>
-                <div
-                    id="message"
-                    class="mb-3 text-center"
-                    style="font-size: 1.1rem"
-                ></div>
-
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        class="form-control"
-                        placeholder="Enter username"
-                        required
-                    />
-                    <div
-                        id="username-error"
-                        class="text-danger mt-2"
-                        style="font-size: 0.875rem"
-                    ></div>
+                <h1 class="text-center mb-4">Add User</h1>
+                <div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-control"
+                            placeholder="Enter name"
+                            required
+                        />
+                        <div
+                            id="name-error"
+                            class="text-danger mt-2"
+                            style="font-size: 0.875rem"
+                        ></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-control"
+                            placeholder="Enter username"
+                            required
+                        />
+                        <div
+                            id="username-error"
+                            class="text-danger mt-2"
+                            style="font-size: 0.875rem"
+                        ></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Enter password"
+                            required
+                        />
+                        <div
+                            id="password-error"
+                            class="text-danger mt-2"
+                            style="font-size: 0.875rem"
+                        ></div>
+                    </div>
+                    <button
+                        #addUser
+                        type="submit"
+                        class="btn btn-primary btn-block mt-3"
+                    >
+                        Add User
+                    </button>
                 </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        class="form-control"
-                        placeholder="Enter password"
-                        required
-                    />
-                    <div
-                        id="password-error"
-                        class="text-danger mt-2"
-                        style="font-size: 0.875rem"
-                    ></div>
-                </div>
-
-                <button id="loginBtn" class="btn btn-primary btn-block mt-3">
-                    Login
-                </button>
             </div>
         </div>
 
         <script>
             $(document).ready(function () {
+                let nameTouched = false;
                 let usernameTouched = false;
                 let passwordTouched = false;
 
@@ -73,7 +90,7 @@
 
                     errorMessageElement.text("");
 
-                    if (usernameTouched || passwordTouched) {
+                    if (nameTouched || usernameTouched || passwordTouched) {
                         if (!value) {
                             errorMessageElement.text("This field is required.");
                             return false;
@@ -89,9 +106,21 @@
                 };
 
                 const triggerBlurOnInputs = () => {
+                    $("#name").blur();
                     $("#username").blur();
                     $("#password").blur();
                 };
+
+                $("#name")
+                    .on("blur", function () {
+                        nameTouched = true;
+                        validateField("#name", "#name-error", 6);
+                    })
+                    .on("input", function () {
+                        if (nameTouched) {
+                            validateField("#name", "#name-error", 6);
+                        }
+                    });
 
                 $("#username")
                     .on("blur", function () {
@@ -115,62 +144,63 @@
                         }
                     });
 
-                const triggerLogin = () => {
-                    $("#message").text("");
-
-                    const username = $("#username").val();
-                    const password = $("#password").val();
-                    const $message = $("#message");
-
+                const triggerOnSubmit = () => {
                     let valid = true;
 
+                    if (!validateField("#name", "#name-error", 6)) {
+                        valid = false;
+                    }
                     if (!validateField("#username", "#username-error", 6)) {
                         valid = false;
                     }
-
                     if (!validateField("#password", "#password-error", 6)) {
                         valid = false;
                     }
 
+                    $("#message").text("");
+
+                    const name = $("#name").val();
+                    const username = $("#username").val();
+                    const password = $("#password").val();
+                    const $message = $("#message");
+
                     if (valid) {
+                        const token = localStorage.getItem("authToken");
                         $.ajax({
-                            url: "/api/auth/login",
+                            url: "/api/users/",
                             method: "POST",
                             contentType: "application/json",
-                            data: JSON.stringify({ username, password }),
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                            data: JSON.stringify({ name, username, password }),
                             success: function (response) {
-                                localStorage.setItem(
-                                    "authToken",
-                                    response.token
-                                );
-
                                 $message
                                     .css("color", "green")
-                                    .text("Login successful!");
-
+                                    .text("User added successfully!");
                                 window.location.href = "/users";
                             },
                             error: function (xhr) {
                                 const msg =
                                     xhr.responseJSON?.message ||
-                                    "Login failed!";
+                                    "Something went wrong!";
                                 $message.css("color", "red").text(msg);
                             },
                         });
                     }
                 };
 
-                $("#loginBtn").click(function (e) {
+                $("#addUser").click(function (e) {
                     e.preventDefault();
                     triggerBlurOnInputs();
-                    triggerLogin();
+                    triggerOnSubmit();
                 });
 
-                $("#username, #password").keydown(function (e) {
+                $("#name, #username, #password").keydown(function (e) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         triggerBlurOnInputs();
-                        triggerLogin();
+                        triggerOnSubmit();
                     }
                 });
             });

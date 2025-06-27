@@ -43,7 +43,10 @@ const updateUser = catchAsync(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
-    return res.status(200).json(updatedUser[0]);
+    return res.status(200).json({
+        message: "User successfully updated",
+        user: updatedUser[0],
+    });
 });
 
 const deleteUser = catchAsync(async (req, res) => {
