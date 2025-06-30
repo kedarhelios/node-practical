@@ -1,17 +1,19 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import apiRoutes from "./routes/api";
-import pageRoutes from "./routes/page";
-import ApiError from "./utils/ApiError";
-import { errorConverter, errorHandler } from "./utils/errorHandlers";
 import path from "path";
 import cookieParser from "cookie-parser";
+
+import apiRoutes from "routes/api";
+import pageRoutes from "routes/page";
+import ApiError from "utils/ApiError";
+import { errorConverter, errorHandler } from "utils/errorHandlers";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 app.use(cookieParser());
 
 app.set("view engine", "ejs");

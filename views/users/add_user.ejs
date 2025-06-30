@@ -72,7 +72,7 @@
                         ></div>
                     </div>
                     <button
-                        #addUser
+                        id="addUser"
                         type="submit"
                         class="btn btn-primary btn-block mt-3"
                     >
@@ -169,9 +169,14 @@
                     const $message = $("#message");
 
                     if (valid) {
+                        const csrfToken = "<%= csrfToken %>";
+
                         $.ajax({
                             url: "/api/users/",
                             method: "POST",
+                            headers: {
+                                "CSRF-Token": csrfToken,
+                            },
                             contentType: "application/json",
                             data: JSON.stringify({ name, username, password }),
                             success: function (response) {

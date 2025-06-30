@@ -53,7 +53,7 @@
                         ></div>
                     </div>
                     <button
-                        #addProduct
+                        id="addProduct"
                         type="submit"
                         class="btn btn-primary btn-block mt-3"
                     >
@@ -136,9 +136,14 @@
                     };
 
                     if (valid) {
+                        const csrfToken = "<%= csrfToken %>";
+
                         $.ajax({
                             url: "/api/products/",
                             method: "POST",
+                            headers: {
+                                "CSRF-Token": csrfToken,
+                            },
                             contentType: "application/json",
                             data: JSON.stringify(data),
                             success: function (response) {

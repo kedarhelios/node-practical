@@ -133,9 +133,14 @@
                     }
 
                     if (valid) {
+                        const csrfToken = "<%= csrfToken %>";
+
                         $.ajax({
                             url: "/api/auth/login",
                             method: "POST",
+                            headers: {
+                                "CSRF-Token": csrfToken,
+                            },
                             contentType: "application/json",
                             data: JSON.stringify({ username, password }),
                             success: function (response) {

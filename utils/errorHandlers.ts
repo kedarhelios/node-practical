@@ -1,10 +1,11 @@
-import ApiError from "../utils/ApiError";
 import { NextFunction, Request, Response } from "express";
+
+import ApiError from "utils/ApiError";
 
 const errorConverter = (
     err: ApiError,
-    req: Request,
-    res: Response,
+    _req: Request,
+    _res: Response,
     next: NextFunction
 ) => {
     let error: any = err;
@@ -16,12 +17,7 @@ const errorConverter = (
     next(error);
 };
 
-const errorHandler = (
-    err: ApiError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+const errorHandler = (err: ApiError, _req: Request, res: Response) => {
     let { statusCode, message } = err;
 
     res.locals.errorMessage = err.message;

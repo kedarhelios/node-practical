@@ -1,6 +1,6 @@
-import ApiError from "../utils/ApiError";
-import catchAsync from "../utils/catchAsync";
-import { User } from "../models";
+import ApiError from "utils/ApiError";
+import catchAsync from "utils/catchAsync";
+import { User } from "models";
 
 const createUser = catchAsync(async (req, res) => {
     const userBody = req.body;

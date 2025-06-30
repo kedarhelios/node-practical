@@ -1,11 +1,14 @@
 import express, { Request, Response } from "express";
+import csurf from "csurf";
+
 import userRoute from "./user.route";
 import productRoute from "./product.route";
 
 const router = express.Router();
+const csrfProtection = csurf({ cookie: true });
 
-router.get("/login", (_req: Request, res: Response) => {
-    res.render("login");
+router.get("/login", csrfProtection, (req: Request, res: Response) => {
+    res.render("login", { csrfToken: req.csrfToken() });
 });
 router.use("/users", userRoute);
 router.use("/products", productRoute);

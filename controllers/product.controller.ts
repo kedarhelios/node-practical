@@ -1,6 +1,6 @@
-import ApiError from "../utils/ApiError";
-import catchAsync from "../utils/catchAsync";
-import { Product } from "../models";
+import ApiError from "utils/ApiError";
+import catchAsync from "utils/catchAsync";
+import { Product } from "models";
 
 const createProduct = catchAsync(async (req, res) => {
     const productBody = req.body;

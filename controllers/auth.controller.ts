@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import ApiError from "../utils/ApiError";
-import { User } from "../models";
-import catchAsync from "../utils/catchAsync";
+
+import { User } from "models";
+import ApiError from "utils/ApiError";
+import catchAsync from "utils/catchAsync";
 
 const login = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {

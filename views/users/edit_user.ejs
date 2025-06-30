@@ -33,7 +33,7 @@
                         id="name"
                         name="name"
                         class="form-control"
-                        value="<%= user.name %>"
+                        value="<%= editingUser.name %>"
                         required
                     />
                     <div
@@ -50,7 +50,7 @@
                         id="username"
                         name="username"
                         class="form-control"
-                        value="<%= user.username %>"
+                        value="<%= editingUser.username %>"
                         required
                     />
                     <div
@@ -177,10 +177,15 @@
                         username: $("#username").val().trim(),
                     };
 
+                    const csrfToken = "<%= csrfToken %>";
+
                     $.ajax({
-                        url: "/api/users/<%= user.id %>",
+                        url: "/api/users/<%= editingUser.id %>",
                         method: "PATCH",
                         contentType: "application/json",
+                        headers: {
+                            "CSRF-Token": csrfToken,
+                        },
                         data: JSON.stringify(data),
                         success: function (response) {
                             $("#message")
@@ -237,9 +242,14 @@
                 });
 
                 $("#confirmDeleteBtn").on("click", function () {
+                    const csrfToken = "<%= csrfToken %>";
+
                     $.ajax({
-                        url: "/api/users/<%= user.id %>",
+                        url: "/api/users/<%= editingUser.id %>",
                         method: "DELETE",
+                        headers: {
+                            "CSRF-Token": csrfToken,
+                        },
                         success: function (response) {
                             document
                                 .getElementById("deleteConfirmDialog")
