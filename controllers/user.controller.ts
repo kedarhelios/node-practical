@@ -45,26 +45,26 @@ const updateUser = catchAsync(async (req, res) => {
         throw new ApiError(400, "User already exists with same username");
     }
 
-    const [affectedRows, updatedUser] = await User.update(
-        {
-            name: req.body.name,
-            username: req.body.username,
-            ...(req.body.password && { password: req.body.password }),
-            updated_by: req.user.userId,
-        },
-        {
-            where: { id: req.params.userId },
-            returning: true,
-        }
-    );
+    const user = await User.findOne({
+        where: { id: req.params.userId },
+    });
 
-    if (affectedRows === 0) {
+    if (!user) {
         throw new ApiError(404, "User not found");
     }
 
+    user.name = req.body?.name;
+    user.username = req.body?.username;
+    user.updated_by = req.user.userId;
+    if (req.body?.password) {
+        user.password = req.body.password;
+    }
+
+    await user.save();
+
     return res.status(200).json({
         message: "User successfully updated",
-        user: updatedUser[0],
+        user: user.toJSON(),
     });
 });
 

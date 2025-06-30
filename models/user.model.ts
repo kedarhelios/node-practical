@@ -62,7 +62,9 @@ export default (sequelize: Sequelize) => {
             updated_by: DataTypes.INTEGER,
         },
         {
-            timestamps: false,
+            timestamps: true,
+            createdAt: "created_at",
+            updatedAt: "updated_at",
             defaultScope: {
                 attributes: { exclude: ["password"] },
             },
