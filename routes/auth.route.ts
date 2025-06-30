@@ -5,6 +5,10 @@ import { loginSchema } from "../validators/auth.validator";
 
 const router = express.Router();
 
-router.route("/login").post(validate(loginSchema), login);
+router.post("/login", validate(loginSchema), login);
+router.post("/logout", (_req, res) => {
+    res.clearCookie("token");
+    res.redirect("/login");
+});
 
 export default router;

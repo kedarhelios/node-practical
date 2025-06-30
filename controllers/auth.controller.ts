@@ -11,7 +11,7 @@ const login = catchAsync(
 
         const user = await User.findOne({
             where: { username },
-            attributes: ["id", "password"],
+            attributes: ["id", "username", "password"],
         });
         if (!user) {
             return next(new ApiError(401, "Invalid credentials"));
@@ -21,14 +21,13 @@ const login = catchAsync(
         if (!isPasswordValid) {
             return next(new ApiError(401, "Invalid credentials"));
         }
-
+        console.log({ userId: user.id, username: user.username });
         const token = jwt.sign(
-            { userId: user.id },
+            { userId: user.id, username: user.username },
             process.env.JWT_SECRET_KEY as string,
             { expiresIn: "7d" }
         );
 
-        // res.status(200).json({ message: "Login successful", token });
         res.cookie("token", token, {
             httpOnly: true,
             secure: false,

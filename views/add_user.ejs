@@ -13,6 +13,7 @@
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     </head>
     <body class="bg-light">
+        <%- include('partials/header', { user: user }) %>
         <div
             class="container d-flex justify-content-center align-items-center vh-100"
         >
@@ -170,9 +171,6 @@
                             url: "/api/users/",
                             method: "POST",
                             contentType: "application/json",
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
                             data: JSON.stringify({ name, username, password }),
                             success: function (response) {
                                 $message
@@ -196,7 +194,9 @@
                     triggerOnSubmit();
                 });
 
-                $("#name, #username, #password").keydown(function (e) {
+                $("#name, #username, #password, #addUser").keydown(function (
+                    e
+                ) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         triggerBlurOnInputs();

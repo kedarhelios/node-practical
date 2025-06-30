@@ -21,16 +21,16 @@ app.set("views", path.join(__dirname, "views"));
 app.get("/login", (_req: Request, res: Response) => {
     res.render("login");
 });
-app.get("/users", authenticate, async (_req: Request, res: Response) => {
+app.get("/users", authenticate, async (req: Request, res: Response) => {
     const users = await User.findAll({
         order: [["username", "ASC"]],
     });
 
-    res.render("users", { users });
+    res.render("users", { users, user: req.user });
 });
-app.get("/users/add", authenticate, (_req: Request, res: Response) => {
+app.get("/users/add", authenticate, (req: Request, res: Response) => {
     try {
-        res.render("add_user");
+        res.render("add_user", { user: req.user });
     } catch (error) {
         console.log(error);
     }
@@ -40,10 +40,10 @@ app.get(
     "/users/edit/:userId",
     authenticate,
     async (req: Request, res: Response) => {
-        const user = await User.findByPk(req.params.userId);
         try {
-            // const isCurrentUser = req.user.userId === user.id;
-            res.render("edit_user", { user, errors: {}, isCurrentUser: false });
+            const user = await User.findByPk(req.params.userId);
+            const isCurrentUser = req.user.userId === user.id;
+            res.render("edit_user", { user, errors: {}, isCurrentUser });
         } catch (error) {
             console.log(error);
         }

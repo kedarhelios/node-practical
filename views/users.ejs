@@ -16,6 +16,7 @@
         />
     </head>
     <body class="bg-light">
+        <%- include('partials/header', { user: user }) %>
         <div class="container mt-5">
             <h1 class="text-center mb-4">Users</h1>
 
@@ -53,7 +54,10 @@
 
         <script>
             $(document).ready(function () {
-                $("#userTable").DataTable();
+                $("#userTable").DataTable({
+                    paging: false,
+                    info: false,
+                });
             });
         </script>
     </body>
