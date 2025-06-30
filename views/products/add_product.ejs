@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Add User</title>
+        <title>Add Product</title>
         <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/flatly/bootstrap.min.css"
@@ -18,7 +18,7 @@
             class="container d-flex justify-content-center align-items-center vh-100"
         >
             <div class="card shadow-lg p-4" style="width: 400px">
-                <h1 class="text-center mb-4">Add User</h1>
+                <h1 class="text-center mb-4">Add Product</h1>
                 <div>
                     <div class="form-group">
                         <label for="name">Name</label>
@@ -37,43 +37,27 @@
                         ></div>
                     </div>
                     <div class="form-group">
-                        <label for="username">Username</label>
+                        <label for="price">Price</label>
                         <input
-                            type="text"
-                            id="username"
-                            name="username"
+                            type="number"
+                            id="price"
+                            name="price"
                             class="form-control"
-                            placeholder="Enter username"
+                            placeholder="Enter price"
                             required
                         />
                         <div
-                            id="username-error"
-                            class="text-danger mt-2"
-                            style="font-size: 0.875rem"
-                        ></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="form-control"
-                            placeholder="Enter password"
-                            required
-                        />
-                        <div
-                            id="password-error"
+                            id="price-error"
                             class="text-danger mt-2"
                             style="font-size: 0.875rem"
                         ></div>
                     </div>
                     <button
-                        #addUser
+                        #addProduct
                         type="submit"
                         class="btn btn-primary btn-block mt-3"
                     >
-                        Add User
+                        Add Product
                     </button>
                 </div>
             </div>
@@ -82,8 +66,7 @@
         <script>
             $(document).ready(function () {
                 let nameTouched = false;
-                let usernameTouched = false;
-                let passwordTouched = false;
+                let priceTouched = false;
 
                 const validateField = (field, errorId, minLength) => {
                     const value = $(field).val().trim();
@@ -91,7 +74,7 @@
 
                     errorMessageElement.text("");
 
-                    if (nameTouched || usernameTouched || passwordTouched) {
+                    if (nameTouched || priceTouched) {
                         if (!value) {
                             errorMessageElement.text("This field is required.");
                             return false;
@@ -108,8 +91,7 @@
 
                 const triggerBlurOnInputs = () => {
                     $("#name").blur();
-                    $("#username").blur();
-                    $("#password").blur();
+                    $("#price").blur();
                 };
 
                 $("#name")
@@ -123,25 +105,14 @@
                         }
                     });
 
-                $("#username")
+                $("#price")
                     .on("blur", function () {
-                        usernameTouched = true;
-                        validateField("#username", "#username-error", 6);
+                        priceTouched = true;
+                        validateField("#price", "#price-error", 1);
                     })
                     .on("input", function () {
-                        if (usernameTouched) {
-                            validateField("#username", "#username-error", 6);
-                        }
-                    });
-
-                $("#password")
-                    .on("blur", function () {
-                        passwordTouched = true;
-                        validateField("#password", "#password-error", 6);
-                    })
-                    .on("input", function () {
-                        if (passwordTouched) {
-                            validateField("#password", "#password-error", 6);
+                        if (priceTouched) {
+                            validateField("#price", "#price-error", 1);
                         }
                     });
 
@@ -151,31 +122,27 @@
                     if (!validateField("#name", "#name-error", 6)) {
                         valid = false;
                     }
-                    if (!validateField("#username", "#username-error", 6)) {
-                        valid = false;
-                    }
-                    if (!validateField("#password", "#password-error", 6)) {
+                    if (!validateField("#price", "#price-error", 1)) {
                         valid = false;
                     }
 
                     $("#message").text("");
 
                     const name = $("#name").val();
-                    const username = $("#username").val();
-                    const password = $("#password").val();
+                    const price = +$("#price").val();
                     const $message = $("#message");
 
                     if (valid) {
                         $.ajax({
-                            url: "/api/users/",
+                            url: "/api/products/",
                             method: "POST",
                             contentType: "application/json",
-                            data: JSON.stringify({ name, username, password }),
+                            data: JSON.stringify({ name, price }),
                             success: function (response) {
                                 $message
                                     .css("color", "green")
-                                    .text("User added successfully!");
-                                window.location.href = "/users";
+                                    .text("Product added successfully!");
+                                window.location.href = "/products";
                             },
                             error: function (xhr) {
                                 const msg =
@@ -187,15 +154,13 @@
                     }
                 };
 
-                $("#addUser").click(function (e) {
+                $("#addProduct").click(function (e) {
                     e.preventDefault();
                     triggerBlurOnInputs();
                     triggerOnSubmit();
                 });
 
-                $("#name, #username, #password, #addUser").keydown(function (
-                    e
-                ) {
+                $("#name, #price, #addProduct").keydown(function (e) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         triggerBlurOnInputs();

@@ -5,7 +5,7 @@ import routes from "./routes";
 import ApiError from "./utils/ApiError";
 import { errorConverter, errorHandler } from "./utils/errorHandlers";
 import path from "path";
-import { User } from "./models";
+import { Product, User } from "./models";
 import cookieParser from "cookie-parser";
 import { authenticate } from "utils/authenticate";
 
@@ -49,6 +49,21 @@ app.get(
         }
     }
 );
+
+app.get("/products", authenticate, async (req: Request, res: Response) => {
+    const products = await Product.findAll({
+        order: [["name", "ASC"]],
+    });
+
+    res.render("products/products", { products, user: req.user });
+});
+app.get("/products/add", authenticate, (req: Request, res: Response) => {
+    try {
+        res.render("products/add_product", { user: req.user });
+    } catch (error) {
+        console.log(error);
+    }
+});
 
 app.use(bodyParser.json());
 

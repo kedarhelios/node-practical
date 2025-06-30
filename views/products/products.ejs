@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Product Listing</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/flatly/bootstrap.min.css"
+        />
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+        <link
+            href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body class="bg-light">
+        <%- include('../partials/header', { user: user }) %>
+        <div class="container mt-5">
+            <h1 class="text-center mb-4">Products</h1>
+
+            <button
+                class="btn btn-primary mb-3"
+                onclick="window.location.href='/products/add'"
+            >
+                Add New Product
+            </button>
+
+            <table id="productTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product Number</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% products.forEach(product => { %>
+                    <tr
+                        onclick="window.location.href='/products/edit/<%= product.id %>'"
+                        class="cursor-pointer"
+                    >
+                        <td><%= product.product_number %></td>
+                        <td><%= product.name %></td>
+                        <td><%= product.price %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $("#productTable").DataTable({
+                    paging: false,
+                    info: false,
+                });
+            });
+        </script>
+    </body>
+</html>

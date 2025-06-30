@@ -177,8 +177,6 @@
                         username: $("#username").val().trim(),
                     };
 
-                    const token = localStorage.getItem("authToken");
-
                     $.ajax({
                         url: "/api/users/<%= user.id %>",
                         method: "PATCH",
@@ -239,14 +237,9 @@
                 });
 
                 $("#confirmDeleteBtn").on("click", function () {
-                    const token = localStorage.getItem("authToken");
-
                     $.ajax({
                         url: "/api/users/<%= user.id %>",
                         method: "DELETE",
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
                         success: function (response) {
                             document
                                 .getElementById("deleteConfirmDialog")
