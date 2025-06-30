@@ -5,13 +5,13 @@ import {
     getUser,
     getUsers,
     updateUser,
-} from "../controllers/user.controller";
+} from "../../controllers/user.controller";
 import {
     createUserSchema,
     updateUserSchema,
-} from "../validators/user.validator";
-import validate from "../utils/validate";
-import { authenticate } from "../utils/authenticate";
+} from "../../validators/user.validator";
+import validate from "../../utils/validate";
+import { authenticate } from "../../utils/authenticate";
 
 const router = express.Router();
 router.use(authenticate);

@@ -46,7 +46,7 @@
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="/">MyApp</a>
+    <a class="navbar-brand" href="/users">Product Management App</a>
     <button
         class="navbar-toggler"
         type="button"
@@ -71,7 +71,8 @@
 
         <div class="avatar-container">
             <div id="avatarBtn" class="avatar-circle">
-                <%= user.username.charAt(0).toUpperCase() %>
+                <%= user.name.split(" ").map(name =>
+                name.charAt(0).toUpperCase()).join(" ") %>
             </div>
             <div class="avatar-dropdown" id="avatarDropdown">
                 <button id="logoutBtn">Logout</button>
