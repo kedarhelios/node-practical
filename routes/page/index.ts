@@ -8,6 +8,11 @@ const router = express.Router();
 const csrfProtection = csurf({ cookie: true });
 
 router.get("/login", csrfProtection, (req: Request, res: Response) => {
+    const token = req.cookies.token;
+
+    if (token) {
+        return res.redirect("/users");
+    }
     res.render("login", { csrfToken: req.csrfToken() });
 });
 router.use("/users", userRoute);

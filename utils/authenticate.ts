@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 const authenticate = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+    const token = req.cookies.token;
 
     if (!token) {
         return res.redirect("/login");
