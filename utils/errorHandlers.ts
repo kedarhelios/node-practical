@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 
 import ApiError from "utils/ApiError";
 
-const errorConverter = (
+const globalErrorHandler = (
     err: ApiError,
     _req: Request,
-    _res: Response,
-    next: NextFunction
+    res: Response,
+    _next: NextFunction
 ) => {
     let error: any = err;
     if (!(error instanceof ApiError)) {
@@ -14,21 +14,15 @@ const errorConverter = (
         const message = error.message || statusCode;
         error = new ApiError(statusCode, message, false, err.stack);
     }
-    next(error);
-};
 
-const errorHandler = (err: ApiError, _req: Request, res: Response) => {
-    let { statusCode, message } = err;
-
-    res.locals.errorMessage = err.message;
-
+    let { statusCode, message } = error;
     const response = {
         code: statusCode,
         message,
         stack: err.stack,
     };
 
-    res.status(statusCode).send(response);
+    res.status(statusCode).json(response);
 };
 
-export { errorConverter, errorHandler };
+export default globalErrorHandler;

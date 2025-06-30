@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import apiRoutes from "routes/api";
 import pageRoutes from "routes/page";
 import ApiError from "utils/ApiError";
-import { errorConverter, errorHandler } from "utils/errorHandlers";
+import globalErrorHandler  from "utils/errorHandlers";
 
 dotenv.config();
 
@@ -29,9 +29,7 @@ app.use((_req, _res, next) => {
     next(new ApiError(404, "This route is not yet defined in the application"));
 });
 
-app.use(errorConverter);
-
-app.use(errorHandler);
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
