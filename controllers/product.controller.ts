@@ -8,7 +8,6 @@ const createProduct = catchAsync(async (req, res) => {
 
     const product = await Product.create({
         name: productBody.name,
-        price: productBody.price,
         product_number: product_number + 1,
         created_by: req.user.userId,
         updated_by: req.user.userId,
@@ -37,7 +36,6 @@ const updateProduct = catchAsync(async (req, res) => {
     const [affectedRows, updatedProduct] = await Product.update(
         {
             name: req.body.name,
-            price: req.body.price,
             updated_by: req.user.userId,
         },
         {

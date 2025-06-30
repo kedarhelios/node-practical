@@ -57,6 +57,10 @@
                 $("#userTable").DataTable({
                     paging: false,
                     info: false,
+                    columnDefs: [
+                        { orderable: true, targets: [0, 1] },
+                        { orderable: false, targets: [2] },
+                    ],
                 });
             });
         </script>

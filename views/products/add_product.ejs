@@ -42,22 +42,7 @@
                             style="font-size: 0.875rem"
                         ></div>
                     </div>
-                    <div class="form-group">
-                        <label for="price">Price</label>
-                        <input
-                            type="number"
-                            id="price"
-                            name="price"
-                            class="form-control"
-                            placeholder="Enter price"
-                            required
-                        />
-                        <div
-                            id="price-error"
-                            class="text-danger mt-2"
-                            style="font-size: 0.875rem"
-                        ></div>
-                    </div>
+
                     <button
                         id="addProduct"
                         type="submit"
@@ -72,7 +57,6 @@
         <script>
             $(document).ready(function () {
                 let nameTouched = false;
-                let priceTouched = false;
 
                 const validateField = (field, errorId, minLength) => {
                     const value = $(field).val().trim();
@@ -80,7 +64,7 @@
 
                     errorMessageElement.text("");
 
-                    if (nameTouched || priceTouched) {
+                    if (nameTouched) {
                         if (!value) {
                             errorMessageElement.text("This field is required.");
                             return false;
@@ -97,7 +81,6 @@
 
                 const triggerBlurOnInputs = () => {
                     $("#name").blur();
-                    $("#price").blur();
                 };
 
                 $("#name")
@@ -111,24 +94,10 @@
                         }
                     });
 
-                $("#price")
-                    .on("blur", function () {
-                        priceTouched = true;
-                        validateField("#price", "#price-error", 1);
-                    })
-                    .on("input", function () {
-                        if (priceTouched) {
-                            validateField("#price", "#price-error", 1);
-                        }
-                    });
-
                 const triggerOnSubmit = () => {
                     let valid = true;
 
                     if (!validateField("#name", "#name-error", 6)) {
-                        valid = false;
-                    }
-                    if (!validateField("#price", "#price-error", 1)) {
                         valid = false;
                     }
 
@@ -138,7 +107,6 @@
 
                     const data = {
                         name: $("#name").val().trim(),
-                        price: +$("#price").val().trim(),
                     };
 
                     if (valid) {
@@ -174,7 +142,7 @@
                     triggerOnSubmit();
                 });
 
-                $("#name, #price, #addProduct").keydown(function (e) {
+                $("#name, #addProduct").keydown(function (e) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         triggerBlurOnInputs();

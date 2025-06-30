@@ -15,7 +15,6 @@ export interface ProductModel
     id: CreationOptional<number>;
     name: string;
     product_number: number;
-    price?: number;
     created_at: CreationOptional<Date>;
     updated_at: CreationOptional<Date>;
     created_by?: number;
@@ -44,10 +43,6 @@ export default (sequelize: Sequelize) => {
                     notEmpty: true,
                     isNumeric: true,
                 },
-            },
-            price: {
-                type: DataTypes.DECIMAL(10, 2),
-                allowNull: true,
             },
             created_at: {
                 type: DataTypes.DATE,

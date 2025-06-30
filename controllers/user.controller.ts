@@ -1,6 +1,7 @@
 import ApiError from "utils/ApiError";
 import catchAsync from "utils/catchAsync";
 import { User } from "models";
+import { Op } from "sequelize";
 
 const createUser = catchAsync(async (req, res) => {
     const userBody = req.body;
@@ -34,10 +35,28 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-    const [affectedRows, updatedUser] = await User.update(req.body, {
-        where: { id: req.params.userId },
-        returning: true,
+    const userExists = await User.findOne({
+        where: {
+            username: req.body.username,
+            id: { [Op.ne]: req.params.userId },
+        },
     });
+    if (userExists) {
+        throw new ApiError(400, "User already exists with same username");
+    }
+
+    const [affectedRows, updatedUser] = await User.update(
+        {
+            name: req.body.name,
+            username: req.body.username,
+            ...(req.body.password && { password: req.body.password }),
+            updated_by: req.user.userId,
+        },
+        {
+            where: { id: req.params.userId },
+            returning: true,
+        }
+    );
 
     if (affectedRows === 0) {
         throw new ApiError(404, "User not found");

@@ -60,6 +60,22 @@
                     ></div>
                 </div>
 
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        required
+                    />
+                    <div
+                        id="password-error"
+                        class="text-danger mt-2"
+                        style="font-size: 0.875rem"
+                    ></div>
+                </div>
+
                 <button
                     id="saveChangesBtn"
                     class="btn btn-primary btn-block mt-3"
@@ -168,6 +184,15 @@
                     if (!validateField("#username", "#username-error", 6))
                         valid = false;
 
+                    const passwordVal = $("#password").val().trim();
+
+                    if (passwordVal && passwordVal.length < 6) {
+                        $("#password-error").text(
+                            "Password must be at least 6 characters."
+                        );
+                        valid = false;
+                    }
+
                     if (!valid) {
                         return;
                     }
@@ -226,7 +251,7 @@
                     triggerOnSubmit();
                 });
 
-                $("#name, #username").keydown(function (e) {
+                $("#name, #username, #password").keydown(function (e) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         triggerOnSubmit();

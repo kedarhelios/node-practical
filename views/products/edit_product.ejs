@@ -61,23 +61,6 @@
                     ></div>
                 </div>
 
-                <div class="form-group">
-                    <label for="price">Price</label>
-                    <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        class="form-control"
-                        value="<%= product.price %>"
-                        required
-                    />
-                    <div
-                        id="price-error"
-                        class="text-danger mt-2"
-                        style="font-size: 0.875rem"
-                    ></div>
-                </div>
-
                 <button
                     id="saveChangesBtn"
                     class="btn btn-primary btn-block mt-3"
@@ -120,7 +103,6 @@
         <script>
             $(document).ready(function () {
                 let nameTouched = false;
-                let priceTouched = false;
 
                 const validateField = (field, errorId, minLength) => {
                     const value = $(field).val().trim();
@@ -152,25 +134,12 @@
                         }
                     });
 
-                $("#price")
-                    .on("blur", function () {
-                        priceTouched = true;
-                        validateField("#price", "#price-error", 6);
-                    })
-                    .on("input", function () {
-                        if (priceTouched) {
-                            validateField("#price", "#price-error", 6);
-                        }
-                    });
-
                 const triggerBlurOnInputs = () => {
                     $("#name").blur();
-                    $("#price").blur();
                 };
 
                 const clearErrors = () => {
                     $("#name-error").text("");
-                    $("#price-error").text("");
                     $("#message").text("");
                 };
 
@@ -181,8 +150,6 @@
                     let valid = true;
                     if (!validateField("#name", "#name-error", 6))
                         valid = false;
-                    if (!validateField("#price", "#price-error", 1))
-                        valid = false;
 
                     if (!valid) {
                         return;
@@ -190,7 +157,6 @@
 
                     const data = {
                         name: $("#name").val().trim(),
-                        price: +$("#price").val().trim(),
                     };
 
                     const csrfToken = "<%= csrfToken %>";
@@ -216,9 +182,6 @@
                                 if (res.errors.name) {
                                     $("#name-error").text(res.errors.name);
                                 }
-                                if (res.errors.price) {
-                                    $("#price-error").text(res.errors.price);
-                                }
                                 if (res.errors.general) {
                                     $("#message")
                                         .css("color", "red")
@@ -240,7 +203,7 @@
                     triggerOnSubmit();
                 });
 
-                $("#name, #price").keydown(function (e) {
+                $("#name").keydown(function (e) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         triggerOnSubmit();
