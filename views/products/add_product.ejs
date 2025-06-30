@@ -128,16 +128,19 @@
 
                     $("#message").text("");
 
-                    const name = $("#name").val();
-                    const price = +$("#price").val();
                     const $message = $("#message");
+
+                    const data = {
+                        name: $("#name").val().trim(),
+                        price: +$("#price").val().trim(),
+                    };
 
                     if (valid) {
                         $.ajax({
                             url: "/api/products/",
                             method: "POST",
                             contentType: "application/json",
-                            data: JSON.stringify({ name, price }),
+                            data: JSON.stringify(data),
                             success: function (response) {
                                 $message
                                     .css("color", "green")

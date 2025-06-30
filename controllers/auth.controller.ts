@@ -21,7 +21,7 @@ const login = catchAsync(
         if (!isPasswordValid) {
             return next(new ApiError(401, "Invalid credentials"));
         }
-        console.log({ userId: user.id, username: user.username });
+
         const token = jwt.sign(
             { userId: user.id, username: user.username },
             process.env.JWT_SECRET_KEY as string,

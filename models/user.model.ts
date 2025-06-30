@@ -8,7 +8,7 @@ import {
 } from "sequelize";
 import bcrypt from "bcrypt";
 
-interface UserModel
+export interface UserModel
     extends Model<
         InferAttributes<UserModel>,
         InferCreationAttributes<UserModel>

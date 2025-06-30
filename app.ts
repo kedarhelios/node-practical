@@ -64,6 +64,23 @@ app.get("/products/add", authenticate, (req: Request, res: Response) => {
         console.log(error);
     }
 });
+app.get(
+    "/products/edit/:productId",
+    authenticate,
+    async (req: Request, res: Response) => {
+        try {
+            const product = await Product.findByPk(req.params.productId);
+
+            res.render("products/edit_product", {
+                product,
+                user: req.user,
+                errors: {},
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+);
 
 app.use(bodyParser.json());
 

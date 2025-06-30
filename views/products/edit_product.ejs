@@ -1,77 +1,217 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Edit Product</title>
         <link
             rel="stylesheet"
-            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/flatly/bootstrap.min.css"
+            integrity="sha384-qF/QmIAj5ZaYFAeQcrQ6bfVMAh4zZlrGwTPY7T/M+iTTLJqJBJjwwnsE5Y0mV7QK"
+            crossorigin="anonymous"
         />
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     </head>
-    <body>
-        <div class="container mt-5">
-            <h1>Edit Product</h1>
-            <form method="POST" action="/products/edit/<%= product.id %>">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <body class="bg-light">
+        <%- include('../partials/header', { user: user }) %>
+        <div
+            class="container d-flex justify-content-center align-items-center vh-100"
+        >
+            <div class="card shadow-lg p-4" style="width: 400px">
+                <h1 class="text-center mb-4">Edit Product</h1>
+
+                <div
+                    id="message"
+                    class="mb-3 text-center"
+                    style="font-size: 1.1rem"
+                ></div>
+
+                <div class="form-group">
+                    <label for="product_number">Product Number</label>
+                    <input
+                        type="number"
+                        id="product_number"
+                        name="product_number"
+                        class="form-control"
+                        value="<%= product.product_number %>"
+                        readonly
+                        disabled
+                    />
+                    <div
+                        id="product_number-error"
+                        class="text-danger mt-2"
+                        style="font-size: 0.875rem"
+                    ></div>
+                </div>
+
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input
                         type="text"
-                        class="form-control"
                         id="name"
                         name="name"
+                        class="form-control"
                         value="<%= product.name %>"
                         required
-                        minlength="6"
                     />
-                    <% if (errors.name) { %>
-                    <small class="text-danger"><%= errors.name %></small>
-                    <% } %>
+                    <div
+                        id="name-error"
+                        class="text-danger mt-2"
+                        style="font-size: 0.875rem"
+                    ></div>
                 </div>
+
                 <div class="form-group">
-                    <label for="product_number">Product Number</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="product_number"
-                        name="product_number"
-                        value="<%= product.product_number %>"
-                        required
-                        pattern="\d+"
-                        minlength="6"
-                    />
-                    <% if (errors.product_number) { %>
-                    <small class="text-danger"
-                        ><%= errors.product_number %></small
-                    >
-                    <% } %>
-                </div>
-                <div class="form-group">
-                    <label for="price">Price (optional)</label>
+                    <label for="price">Price</label>
                     <input
                         type="number"
-                        step="0.01"
-                        class="form-control"
                         id="price"
                         name="price"
+                        class="form-control"
                         value="<%= product.price %>"
+                        required
                     />
+                    <div
+                        id="price-error"
+                        class="text-danger mt-2"
+                        style="font-size: 0.875rem"
+                    ></div>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    Update Product
+
+                <button
+                    id="saveChangesBtn"
+                    class="btn btn-primary btn-block mt-3"
+                >
+                    Save Changes
                 </button>
-                <a href="/products" class="btn btn-secondary">Cancel</a>
-            </form>
-            <form
-                method="POST"
-                action="/products/delete/<%= product.id %>"
-                class="mt-3"
-                onsubmit="return confirm('Are you sure you want to delete this product?');"
-            >
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                <button type="submit" class="btn btn-danger">
-                    Delete Product
-                </button>
-            </form>
+            </div>
         </div>
+
+        <script>
+            $(document).ready(function () {
+                let nameTouched = false;
+                let priceTouched = false;
+
+                const validateField = (field, errorId, minLength) => {
+                    const value = $(field).val().trim();
+                    const errorMessageElement = $(errorId);
+
+                    errorMessageElement.text("");
+
+                    if (!value) {
+                        errorMessageElement.text("This field is required.");
+                        return false;
+                    }
+                    if (value.length < minLength) {
+                        errorMessageElement.text(
+                            `This field must be at least ${minLength} characters.`
+                        );
+                        return false;
+                    }
+                    return true;
+                };
+
+                $("#name")
+                    .on("blur", function () {
+                        nameTouched = true;
+                        validateField("#name", "#name-error", 6);
+                    })
+                    .on("input", function () {
+                        if (nameTouched) {
+                            validateField("#name", "#name-error", 6);
+                        }
+                    });
+
+                $("#price")
+                    .on("blur", function () {
+                        priceTouched = true;
+                        validateField("#price", "#price-error", 6);
+                    })
+                    .on("input", function () {
+                        if (priceTouched) {
+                            validateField("#price", "#price-error", 6);
+                        }
+                    });
+
+                const triggerBlurOnInputs = () => {
+                    $("#name").blur();
+                    $("#price").blur();
+                };
+
+                const clearErrors = () => {
+                    $("#name-error").text("");
+                    $("#price-error").text("");
+                    $("#message").text("");
+                };
+
+                const triggerOnSubmit = () => {
+                    clearErrors();
+                    triggerBlurOnInputs();
+
+                    let valid = true;
+                    if (!validateField("#name", "#name-error", 6))
+                        valid = false;
+                    if (!validateField("#price", "#price-error", 1))
+                        valid = false;
+
+                    if (!valid) {
+                        return;
+                    }
+
+                    const data = {
+                        name: $("#name").val().trim(),
+                        price: +$("#price").val().trim(),
+                    };
+
+                    $.ajax({
+                        url: "/api/products/<%= product.id %>",
+                        method: "PATCH",
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        success: function (response) {
+                            $("#message")
+                                .css("color", "green")
+                                .text("Product updated successfully!");
+
+                            window.location.href = "/products";
+                        },
+                        error: function (xhr) {
+                            const res = xhr.responseJSON;
+                            if (res && res.errors) {
+                                if (res.errors.name) {
+                                    $("#name-error").text(res.errors.name);
+                                }
+                                if (res.errors.price) {
+                                    $("#price-error").text(res.errors.price);
+                                }
+                                if (res.errors.general) {
+                                    $("#message")
+                                        .css("color", "red")
+                                        .text(res.errors.general);
+                                }
+                            } else {
+                                $("#message")
+                                    .css("color", "red")
+                                    .text(
+                                        "An error occurred. Please try again."
+                                    );
+                            }
+                        },
+                    });
+                };
+
+                $("#saveChangesBtn").click(function (e) {
+                    e.preventDefault();
+                    triggerOnSubmit();
+                });
+
+                $("#name, #price").keydown(function (e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        triggerOnSubmit();
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

@@ -7,7 +7,7 @@ import {
     CreationOptional,
 } from "sequelize";
 
-interface ProductModel
+export interface ProductModel
     extends Model<
         InferAttributes<ProductModel>,
         InferCreationAttributes<ProductModel>

@@ -50,7 +50,10 @@ const updateProduct = catchAsync(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
 
-    return res.status(200).json(updatedProduct[0]);
+    return res.status(200).json({
+        message: "Product successfully updated",
+        user: updatedProduct[0],
+    });
 });
 
 const deleteProduct = catchAsync(async (req, res) => {
