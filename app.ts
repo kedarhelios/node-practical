@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import routes from "./routes";
@@ -6,27 +6,29 @@ import ApiError from "./utils/ApiError";
 import { errorConverter, errorHandler } from "./utils/errorHandlers";
 import path from "path";
 import { User } from "./models";
-import { Op } from "sequelize";
+import cookieParser from "cookie-parser";
+import { authenticate } from "utils/authenticate";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(cookieParser());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.get("/login", (req: Request, res: Response, next: NextFunction) => {
+app.get("/login", (_req: Request, res: Response) => {
     res.render("login");
 });
-app.get("/users", async (req: Request, res: Response, next: NextFunction) => {
+app.get("/users", authenticate, async (_req: Request, res: Response) => {
     const users = await User.findAll({
         order: [["username", "ASC"]],
     });
 
     res.render("users", { users });
 });
-app.get("/users/add", (req: Request, res: Response, next: NextFunction) => {
+app.get("/users/add", authenticate, (_req: Request, res: Response) => {
     try {
         res.render("add_user");
     } catch (error) {
@@ -36,7 +38,8 @@ app.get("/users/add", (req: Request, res: Response, next: NextFunction) => {
 
 app.get(
     "/users/edit/:userId",
-    async (req: Request, res: Response, next: NextFunction) => {
+    authenticate,
+    async (req: Request, res: Response) => {
         const user = await User.findByPk(req.params.userId);
         try {
             // const isCurrentUser = req.user.userId === user.id;

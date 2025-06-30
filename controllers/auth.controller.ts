@@ -28,7 +28,13 @@ const login = catchAsync(
             { expiresIn: "7d" }
         );
 
-        res.status(200).json({ message: "Login successful", token });
+        // res.status(200).json({ message: "Login successful", token });
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 24 * 60 * 60 * 1000,
+        });
+        res.redirect("/users");
     }
 );
 

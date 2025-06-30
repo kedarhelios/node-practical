@@ -139,11 +139,6 @@
                             contentType: "application/json",
                             data: JSON.stringify({ username, password }),
                             success: function (response) {
-                                localStorage.setItem(
-                                    "authToken",
-                                    response.token
-                                );
-
                                 $message
                                     .css("color", "green")
                                     .text("Login successful!");
