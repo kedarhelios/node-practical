@@ -26,11 +26,11 @@ app.get("/users", authenticate, async (req: Request, res: Response) => {
         order: [["username", "ASC"]],
     });
 
-    res.render("users", { users, user: req.user });
+    res.render("users/users", { users, user: req.user });
 });
 app.get("/users/add", authenticate, (req: Request, res: Response) => {
     try {
-        res.render("add_user", { user: req.user });
+        res.render("users/add_user", { user: req.user });
     } catch (error) {
         console.log(error);
     }
@@ -43,7 +43,7 @@ app.get(
         try {
             const user = await User.findByPk(req.params.userId);
             const isCurrentUser = req.user.userId === user.id;
-            res.render("edit_user", { user, errors: {}, isCurrentUser });
+            res.render("users/edit_user", { user, errors: {}, isCurrentUser });
         } catch (error) {
             console.log(error);
         }
