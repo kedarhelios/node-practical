@@ -6,12 +6,6 @@ import { User } from "models";
 
 const createUser = catchAsync(async (req, res) => {
     const userBody = req.body;
-    const userExists = await User.findOne({
-        where: { username: userBody.username },
-    });
-    if (userExists) {
-        throw new ApiError(400, "User already exists with same username");
-    }
 
     const user = await User.create({
         name: userBody.name,
@@ -83,7 +77,6 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-    console.log("im here");
     const userExists = await User.findOne({
         where: {
             username: req.body.username,

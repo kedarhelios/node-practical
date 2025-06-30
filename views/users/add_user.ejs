@@ -90,6 +90,8 @@
 
         <script>
             $(document).ready(function () {
+                $("#name").focus();
+
                 let nameTouched = false;
                 let usernameTouched = false;
                 let passwordTouched = false;
@@ -192,6 +194,7 @@
                                 window.location.href = "/users";
                             },
                             error: function (xhr) {
+                                $("#name").focus();
                                 const msg =
                                     xhr.responseJSON?.message ||
                                     "Something went wrong!";

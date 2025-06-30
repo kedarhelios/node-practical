@@ -3,6 +3,7 @@ import csurf from "csurf";
 
 import { Product } from "models";
 import { authenticate } from "utils/authenticate";
+import catchAsync from "utils/catchAsync";
 
 const router = express.Router();
 const csrfProtection = csurf({ cookie: true });
@@ -16,17 +17,14 @@ router.get("/", async (req: Request, res: Response) => {
 router.use(csrfProtection);
 
 router.get("/add", (req: Request, res: Response) => {
-    try {
-        res.render("products/add_product", {
-            user: req.user,
-            csrfToken: req.csrfToken(),
-        });
-    } catch (error) {
-        console.log(error);
-    }
+    res.render("products/add_product", {
+        user: req.user,
+        csrfToken: req.csrfToken(),
+    });
 });
-router.get("/edit/:productId", async (req: Request, res: Response) => {
-    try {
+router.get(
+    "/edit/:productId",
+    catchAsync(async (req: Request, res: Response) => {
         const product = await Product.findByPk(req.params.productId);
 
         res.render("products/edit_product", {
@@ -35,9 +33,7 @@ router.get("/edit/:productId", async (req: Request, res: Response) => {
             errors: {},
             csrfToken: req.csrfToken(),
         });
-    } catch (error) {
-        console.log(error);
-    }
-});
+    })
+);
 
 export default router;

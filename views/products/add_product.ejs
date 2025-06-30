@@ -56,6 +56,8 @@
 
         <script>
             $(document).ready(function () {
+                $("#name").focus();
+
                 let nameTouched = false;
 
                 const validateField = (field, errorId, minLength) => {
@@ -127,6 +129,7 @@
                                 window.location.href = "/products";
                             },
                             error: function (xhr) {
+                                $("#name").focus();
                                 const msg =
                                     xhr.responseJSON?.message ||
                                     "Something went wrong!";

@@ -1,3 +1,4 @@
+import { User } from "models";
 import { z } from "zod";
 
 const createUserSchema = z.object(
@@ -7,10 +8,23 @@ const createUserSchema = z.object(
                 invalid_type_error: "Name must be a string",
                 required_error: "Name is required",
             }),
-            username: z.string({
-                invalid_type_error: "Username must be a string",
-                required_error: "Username is required",
-            }),
+            username: z
+                .string({
+                    invalid_type_error: "Username must be a string",
+                    required_error: "Username is required",
+                })
+                .refine(
+                    async (username) => {
+                        const userExists = await User.findOne({
+                            where: { username },
+                        });
+                        return !userExists;
+                    },
+                    {
+                        message: "User already exists with same username",
+                    }
+                ),
+
             password: z
                 .string({
                     invalid_type_error: "Password must be a string",

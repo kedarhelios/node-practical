@@ -4,9 +4,9 @@ import { z } from "zod";
 import ApiError from "utils/ApiError";
 
 const validate =
-    (schema: z.Schema) => (req: Request, res: Response, next: NextFunction) => {
-        console.log("im in validation", req.body);
-        const result = schema.safeParse({
+    (schema: z.Schema) =>
+    async (req: Request, res: Response, next: NextFunction) => {
+        const result = await schema.safeParseAsync({
             body: req.body,
             params: req.params,
             query: req.query,

@@ -102,6 +102,8 @@
 
         <script>
             $(document).ready(function () {
+                $("#name").focus();
+
                 let nameTouched = false;
 
                 const validateField = (field, errorId, minLength) => {
@@ -180,14 +182,17 @@
                             const res = xhr.responseJSON;
                             if (res && res.errors) {
                                 if (res.errors.name) {
+                                    $("#name").focus();
                                     $("#name-error").text(res.errors.name);
                                 }
                                 if (res.errors.general) {
+                                    $("#name").focus();
                                     $("#message")
                                         .css("color", "red")
                                         .text(res.errors.general);
                                 }
                             } else {
+                                $("#name").focus();
                                 $("#message")
                                     .css("color", "red")
                                     .text(
