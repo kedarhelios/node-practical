@@ -10,11 +10,7 @@ const csrfProtection = csurf({ cookie: true });
 router.use(authenticate);
 
 router.get("/", async (req: Request, res: Response) => {
-    const users = await User.findAll({
-        order: [["username", "ASC"]],
-    });
-
-    res.render("users/users", { users, user: req.user });
+    res.render("users/users", { user: req.user });
 });
 
 router.use(csrfProtection);

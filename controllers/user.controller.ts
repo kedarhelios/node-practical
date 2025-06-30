@@ -1,7 +1,8 @@
+import { Op } from "sequelize";
+
 import ApiError from "utils/ApiError";
 import catchAsync from "utils/catchAsync";
 import { User } from "models";
-import { Op } from "sequelize";
 
 const createUser = catchAsync(async (req, res) => {
     const userBody = req.body;
@@ -18,8 +19,49 @@ const createUser = catchAsync(async (req, res) => {
 });
 
 const getUsers = catchAsync(async (req, res) => {
-    const result = await User.findAll();
-    return res.status(200).json(result);
+    const {
+        page = "1",
+        limit = "10",
+        search = "",
+        sortBy = "name",
+        order = "ASC",
+    } = req.query as unknown as {
+        page: string;
+        limit: string;
+        search: string;
+        sortBy: string;
+        order: string;
+    };
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    const searchCondition = {
+        [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { username: { [Op.like]: `%${search}%` } },
+        ],
+    };
+
+    const validSortFields = ["name", "username"];
+    const validOrder = order.toUpperCase() === "ASC" ? "ASC" : "DESC";
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "name";
+
+    const result = await User.findAndCountAll({
+        where: searchCondition,
+        limit: parseInt(limit),
+        offset,
+        order: [[sortField, validOrder]],
+    });
+
+    return res.status(200).json({
+        data: result.rows,
+        pagination: {
+            total: result.count,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            totalPages: Math.ceil(result.count / parseInt(limit)),
+        },
+    });
 });
 
 const getUser = catchAsync(async (req, res) => {

@@ -35,29 +35,74 @@
                         <th>Created At</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <% products.forEach(product => { %>
-                    <tr
-                        onclick="window.location.href='/products/edit/<%= product.id %>'"
-                        class="cursor-pointer"
-                    >
-                        <td><%= product.product_number %></td>
-                        <td><%= product.name %></td>
-                        <td><%= product.created_at.toISOString().slice(0, 10) %></td>
-                    </tr>
-                    <% }) %>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
 
         <script>
             $(document).ready(function () {
-                $("#productTable").DataTable({
-                    paging: false,
-                    info: false,
+                const table = $("#productTable").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: function (data, callback, settings) {
+                        const page =
+                            settings._iDisplayStart / settings._iDisplayLength +
+                            1;
+                        const limit = settings._iDisplayLength;
+                        const search = settings.oPreviousSearch.sSearch;
+                        const sortBy =
+                            settings.aaSorting[0][0] === 0
+                                ? "product_number"
+                                : "name";
+                        const order =
+                            settings.aaSorting[0][1] === "asc" ? "ASC" : "DESC";
+
+                        $.ajax({
+                            url: "/api/products",
+                            method: "GET",
+                            data: {
+                                page: page,
+                                limit: limit,
+                                search: search,
+                                sortBy: sortBy,
+                                order: order,
+                            },
+                            success: function (response) {
+                                callback({
+                                    draw: settings.iDraw,
+                                    recordsTotal: response.pagination.total,
+                                    recordsFiltered: response.pagination.total,
+                                    data: response.data,
+                                });
+                            },
+                            error: function (xhr, error, thrown) {
+                                console.error("Error fetching data: ", error);
+                            },
+                        });
+                    },
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50, 100],
+                    columns: [
+                        { data: "product_number" },
+                        { data: "name" },
+                        { data: "created_at" },
+                    ],
                     columnDefs: [
-                        { orderable: true, targets: [0, 1] },
-                        { orderable: false, targets: [2] },
+                        {
+                            targets: [0, 1],
+                            orderable: true,
+                        },
+                        {
+                            targets: 2,
+                            orderable: false,
+                            render: function (data) {
+                                return new Date(data).toLocaleDateString();
+                            },
+                        },
                     ],
                 });
             });

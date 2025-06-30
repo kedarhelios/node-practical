@@ -8,9 +8,7 @@ import { loginSchema } from "validators/auth.validator";
 const router = express.Router();
 const csrfProtection = csurf({ cookie: true });
 
-router.use(csrfProtection);
-
-router.post("/login", validate(loginSchema), login);
+router.post("/login", csrfProtection, validate(loginSchema), login);
 router.post("/logout", (_req, res) => {
     res.clearCookie("token");
     res.redirect("/login");

@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import ApiError from "utils/ApiError";
 import catchAsync from "utils/catchAsync";
 import { Product } from "models";
@@ -16,8 +18,51 @@ const createProduct = catchAsync(async (req, res) => {
 });
 
 const getProducts = catchAsync(async (req, res) => {
-    const products = await Product.findAll();
-    return res.status(200).json(products);
+    const {
+        page = "1",
+        limit = "10",
+        search = "",
+        sortBy = "name",
+        order = "ASC",
+    } = req.query as unknown as {
+        page: string;
+        limit: string;
+        search: string;
+        sortBy: string;
+        order: string;
+    };
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    const searchCondition = {
+        [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { product_number: { [Op.like]: `%${search}%` } },
+        ],
+    };
+
+    const validSortFields = ["name", "product_number"];
+    const validOrder = order.toUpperCase() === "ASC" ? "ASC" : "DESC";
+    const sortField = validSortFields.includes(sortBy)
+        ? sortBy
+        : "product_number";
+
+    const result = await Product.findAndCountAll({
+        where: searchCondition,
+        limit: parseInt(limit),
+        offset,
+        order: [[sortField, validOrder]],
+    });
+
+    return res.status(200).json({
+        data: result.rows,
+        pagination: {
+            total: result.count,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            totalPages: Math.ceil(result.count / parseInt(limit)),
+        },
+    });
 });
 
 const getProduct = catchAsync(async (req, res) => {
