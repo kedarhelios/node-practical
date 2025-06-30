@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import apiRoutes from "routes/api";
 import pageRoutes from "routes/page";
 import ApiError from "utils/ApiError";
-import globalErrorHandler  from "utils/errorHandlers";
+import globalErrorHandler from "utils/errorHandlers";
 
 dotenv.config();
 
@@ -25,8 +25,17 @@ app.use(bodyParser.json());
 
 app.use("/api", apiRoutes);
 
-app.use((_req, _res, next) => {
-    next(new ApiError(404, "This route is not yet defined in the application"));
+app.use((req, res, next) => {
+    if (req.path === "/" && req.method === "GET") {
+        res.redirect("/login");
+    } else {
+        next(
+            new ApiError(
+                404,
+                "This route is not yet defined in the application"
+            )
+        );
+    }
 });
 
 app.use(globalErrorHandler);
