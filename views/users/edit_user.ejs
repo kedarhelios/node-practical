@@ -201,8 +201,11 @@
                     const data = {
                         name: $("#name").val().trim(),
                         username: $("#username").val().trim(),
-                        password: $("#password").val().trim(),
                     };
+
+                    if (passwordVal) {
+                        data.password = passwordVal;
+                    }
 
                     const csrfToken = "<%= csrfToken %>";
 

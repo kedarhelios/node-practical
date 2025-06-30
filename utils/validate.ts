@@ -5,6 +5,7 @@ import ApiError from "utils/ApiError";
 
 const validate =
     (schema: z.Schema) => (req: Request, res: Response, next: NextFunction) => {
+        console.log("im in validation", req.body);
         const result = schema.safeParse({
             body: req.body,
             params: req.params,

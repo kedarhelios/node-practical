@@ -104,6 +104,16 @@
                             },
                         },
                     ],
+                    createdRow: function (row, data, dataIndex) {
+                        $(row)
+                            .attr(
+                                "onclick",
+                                "window.location.href='/users/edit/" +
+                                    data.id +
+                                    "'"
+                            )
+                            .css("cursor", "pointer");
+                    },
                 });
             });
         </script>

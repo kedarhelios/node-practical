@@ -13,7 +13,13 @@ const createUser = catchAsync(async (req, res) => {
         throw new ApiError(400, "User already exists with same username");
     }
 
-    const user = await User.create(userBody);
+    const user = await User.create({
+        name: userBody.name,
+        username: userBody.username,
+        password: userBody.password,
+        created_by: req.user.userId,
+        updated_by: req.user.userId,
+    });
     const result = { ...user.get(), password: undefined };
     return res.status(201).json(result);
 });
@@ -77,6 +83,7 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
+    console.log("im here");
     const userExists = await User.findOne({
         where: {
             username: req.body.username,
