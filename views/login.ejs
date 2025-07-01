@@ -40,15 +40,58 @@
                     ></div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group position-relative">
                     <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        class="form-control"
-                        placeholder="Enter password"
-                        required
-                    />
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="Enter password"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span
+                                class="input-group-text bg-white"
+                                id="toggle-password"
+                                style="cursor: pointer"
+                                title="Show password"
+                            >
+                                <svg
+                                    id="eye-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    fill="currentColor"
+                                    viewBox="0 0 16 16"
+                                >
+                                    <path
+                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zm-8 4a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"
+                                    />
+                                    <path
+                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"
+                                    />
+                                </svg>
+
+                                <svg
+                                    id="eye-slash-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    fill="currentColor"
+                                    viewBox="0 0 16 16"
+                                    style="display: none"
+                                >
+                                    <path
+                                        d="M13.359 11.238C14.524 10.146 15.383 8.795 16 8c-.611-.786-1.486-2.01-2.699-3.12l.016.02-1.42 1.42c.8.667 1.425 1.455 1.886 2.173a13.133 13.133 0 0 1-2.222 2.401l1.798 1.364z"
+                                    />
+                                    <path
+                                        d="M11.43 12.46c-1.106.64-2.37 1.04-3.43 1.04-5 0-8-5.5-8-5.5a16.416 16.416 0 0 1 3.172-3.43L1.354 2.646 2.646 1.354l12 12-1.292 1.292-2.923-2.186zM9.683 10.712l-1.487-1.487a2.5 2.5 0 0 1-3.42-3.42L3.172 4.16C2.116 5.048 1.36 6.095.9 7c.536.96 1.368 2.06 2.488 3.005a13.12 13.12 0 0 0 3.244 1.887c.878.354 1.849.537 2.707.556l.344.003z"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
                     <div
                         id="password-error"
                         class="text-danger mt-2"
@@ -95,6 +138,66 @@
                     $("#password").blur();
                 };
 
+                const toggleLoading = (loading) => {
+                    const $btn = $("#loginBtn");
+                    if (loading) {
+                        $btn.prop("disabled", true).html(
+                            '<span class="spinner-border spinner-border-sm"></span> Logging in...'
+                        );
+                    } else {
+                        $btn.prop("disabled", false).text("Login");
+                    }
+                };
+
+                const triggerLogin = () => {
+                    $("#message").text("");
+
+                    const username = $("#username").val();
+                    const password = $("#password").val();
+                    const $message = $("#message");
+
+                    let valid = true;
+
+                    if (!validateField("#username", "#username-error", 6)) {
+                        valid = false;
+                    }
+
+                    if (!validateField("#password", "#password-error", 6)) {
+                        valid = false;
+                    }
+
+                    if (valid) {
+                        const csrfToken = "<%= csrfToken %>";
+                        toggleLoading(true);
+                        $.ajax({
+                            url: "/api/auth/login",
+                            method: "POST",
+                            headers: {
+                                "CSRF-Token": csrfToken,
+                            },
+                            contentType: "application/json",
+                            data: JSON.stringify({ username, password }),
+                            success: function (response) {
+                                $message
+                                    .hide()
+                                    .css("color", "green")
+                                    .text("Login successful!")
+                                    .fadeIn();
+
+                                toggleLoading(false);
+                                window.location.href = "/users";
+                            },
+                            error: function (xhr) {
+                                toggleLoading(false);
+                                const msg =
+                                    xhr.responseJSON?.message ||
+                                    "Login failed!";
+                                $message.css("color", "red").text(msg);
+                            },
+                        });
+                    }
+                };
+
                 $("#username")
                     .on("blur", function () {
                         usernameTouched = true;
@@ -117,50 +220,24 @@
                         }
                     });
 
-                const triggerLogin = () => {
-                    $("#message").text("");
+                $("#toggle-password").on("click", function () {
+                    const passwordInput = $("#password");
+                    const isPassword =
+                        passwordInput.attr("type") === "password";
 
-                    const username = $("#username").val();
-                    const password = $("#password").val();
-                    const $message = $("#message");
+                    passwordInput.attr(
+                        "type",
+                        isPassword ? "text" : "password"
+                    );
 
-                    let valid = true;
+                    $("#toggle-password").attr(
+                        "title",
+                        isPassword ? "Hide password" : "Show password"
+                    );
 
-                    if (!validateField("#username", "#username-error", 6)) {
-                        valid = false;
-                    }
-
-                    if (!validateField("#password", "#password-error", 6)) {
-                        valid = false;
-                    }
-
-                    if (valid) {
-                        const csrfToken = "<%= csrfToken %>";
-
-                        $.ajax({
-                            url: "/api/auth/login",
-                            method: "POST",
-                            headers: {
-                                "CSRF-Token": csrfToken,
-                            },
-                            contentType: "application/json",
-                            data: JSON.stringify({ username, password }),
-                            success: function (response) {
-                                $message
-                                    .css("color", "green")
-                                    .text("Login successful!");
-
-                                window.location.href = "/users";
-                            },
-                            error: function (xhr) {
-                                const msg =
-                                    xhr.responseJSON?.message ||
-                                    "Login failed!";
-                                $message.css("color", "red").text(msg);
-                            },
-                        });
-                    }
-                };
+                    $("#eye-icon").toggle(!isPassword);
+                    $("#eye-slash-icon").toggle(isPassword);
+                });
 
                 $("#loginBtn").click(function (e) {
                     e.preventDefault();
